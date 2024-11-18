@@ -18,6 +18,26 @@ data['year'] = data['date_time'].dt.year
 
 st.title("Earthquake Trends Analysis")
 
+# Заголовок додатку
+st.title("Гістограма розподілу магнітуд землетрусів")
+
+# Вибір року
+years = sorted(data['year'].dropna().unique())
+selected_year = st.selectbox("Оберіть рік:", years)
+
+# Фільтрація даних за вибраним роком
+filtered_data = data[data['year'] == selected_year]
+
+# Побудова гістограми
+plt.figure(figsize=(10, 6))
+plt.hist(filtered_data['magnitude'], bins=20, color='skyblue', edgecolor='black')
+plt.title(f"Distribution of earthquake magnitudes in {selected_year}")
+plt.xlabel("Magnitude")
+plt.ylabel("Count")
+
+# Відображення гістограми у Streamlit
+st.pyplot(plt)
+
 # Кількість землетрусів за роками
 yearly_counts = data.groupby('year').size()
 
