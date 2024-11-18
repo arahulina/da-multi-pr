@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import folium
+from streamlit_folium import st_folium
 
 # Завантаження даних
 @st.cache_data
