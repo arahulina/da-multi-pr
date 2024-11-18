@@ -9,6 +9,11 @@ def load_data():
 
 data = load_data()
 
+# Перетворення колонки з датами на формат datetime
+data['date_time'] = pd.to_datetime(data['date_time'], errors='coerce')
+# Додавання колонки для року
+data['year'] = data['date_time'].dt.year
+
 st.title("Earthquake Trends Analysis")
 
 # Кількість землетрусів за роками
