@@ -11,17 +11,21 @@ Use the sidebar to navigate through different analysis tools:
 - Tsunami vs Depth & Magnitude Analysis
 """)
 
-# CSS для додавання фонового зображення
-page_bg = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-image: url('image/background.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-</style>
-"""
+# Вставка стилів для фонового зображення
+def add_bg_from_url():
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background: url("https://images.app.goo.gl/orhcCWGtFcmtDST87");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Вставка стилів на сторінку
-st.markdown(page_bg, unsafe_allow_html=True)
+# Виклик функції для додавання фону
+add_bg_from_url()
