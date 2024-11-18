@@ -19,11 +19,11 @@ data['year'] = data['date_time'].dt.year
 st.title("Earthquake Trends Analysis")
 
 # Заголовок додатку
-st.title("Гістограма розподілу магнітуд землетрусів")
+st.title("Histogram of earthquake magnitude distribution")
 
 # Вибір року
 years = sorted(data['year'].dropna().unique())
-selected_year = st.selectbox("Оберіть рік:", years)
+selected_year = st.selectbox("Select a year", years)
 
 # Фільтрація даних за вибраним роком
 filtered_data = data[data['year'] == selected_year]
@@ -37,6 +37,8 @@ plt.ylabel("Count")
 
 # Відображення гістограми у Streamlit
 st.pyplot(plt)
+
+st.title("Trend in the number of earthquakes by year")
 
 # Кількість землетрусів за роками
 yearly_counts = data.groupby('year').size()

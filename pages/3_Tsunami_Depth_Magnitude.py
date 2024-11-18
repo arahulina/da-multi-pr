@@ -9,6 +9,21 @@ def load_data():
 
 data = load_data()
 
+# Заголовок додатку
+st.title("Scattering: Magnitude versus depth of earthquakes")
+
+# Побудова графіка розсіювання
+plt.figure(figsize=(10, 6))
+plt.scatter(data['depth'], data['magnitude'], alpha=0.5, c='skyblue', edgecolor='k')
+plt.title("Dependence of magnitude on earthquake depth")
+plt.xlabel("Depth (km)")
+plt.ylabel("Magnitude")
+plt.grid(True)
+
+# Відображення графіка у Streamlit
+st.pyplot(plt)
+
+
 st.title("Tsunami vs Depth and Magnitude")
 
 # Видалення пропущених значень
