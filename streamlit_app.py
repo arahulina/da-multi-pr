@@ -17,7 +17,7 @@ def add_bg_from_url():
         f"""
         <style>
         .stApp {{
-            background: url("https://images.app.goo.gl/orhcCWGtFcmtDST87");
+            background: url("https://depositphotos.com/photo/scenic-view-volcanic-rocky-mountain-bright-sunset-581699896.html");
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
