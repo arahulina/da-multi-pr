@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 import folium
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 
 # Завантаження даних
 @st.cache_data
@@ -20,26 +21,26 @@ st.title("Interactive Map of Earthquakes")
 
 # Вибір континенту з можливістю вибору всіх континентів
 continents = sorted(data['continent'].dropna().unique())
-continents.insert(0, "Всі континенти")
-selected_continent = st.selectbox("Оберіть континент:", continents, key="continent_select")
+continents.insert(0, "All continents")
+selected_continent = st.selectbox("Select a continent:", continents, key="continent_select")
 
 # Вибір року з можливістю вибору всіх років
 years = sorted(data['year'].dropna().unique())
-years.insert(0, "Всі роки")
-selected_year = st.selectbox("Оберіть рік:", years, key="year_select")
+years.insert(0, "All years")
+selected_year = st.selectbox("Select a year:", years, key="year_select")
 
 # Фільтрація даних за вибраними континентом і роком
-if selected_continent == "Всі континенти":
+if selected_continent == "All continents":
     filtered_data = data
 else:
     filtered_data = data[data['continent'] == selected_continent]
 
-if selected_year != "Всі роки":
+if selected_year != "All years":
     filtered_data = filtered_data[filtered_data['year'] == selected_year]
 
 # Перевірка наявності даних після фільтрації
 if filtered_data.empty:
-    st.warning("Немає даних для вибраного континенту та року.")
+    st.warning("No data for the selected continent and year.")
 else:
     # Функція для визначення кольору залежно від магнітуди
     def magnitude_color(magnitude):
@@ -94,7 +95,33 @@ else:
     m.get_root().html.add_child(folium.Element(legend_html))
 
     # Відображення карти у Streamlit
-    st.write(f"Континент: {selected_continent}, Рік: {selected_year}")
-    #st_folium(m, width=700, height=500)
-    folium_static(m, height=600)
+    st.write(f"Continent: {selected_continent}, Year: {selected_year}")
+    st_folium(m, width=700, height=500)
 
+
+# Заголовок додатку
+st.title("Comparison of the number of earthquakes by country or continent")
+
+# Вибір групування: за країнами або континентами
+group_by_option = st.radio("Sort by:", ['Country', 'Continent'])
+
+# Групування та підрахунок
+if group_by_option == 'Country':
+    data_grouped = data['country'].value_counts().dropna().head(10)  # Топ-10 країн
+    ylabel = "Number of earthquakes"
+    title = "Number of earthquakes by country (Top 10)"
+else:
+    data_grouped = data['continent'].value_counts().dropna()
+    ylabel = "Number of earthquakes"
+    title = "Number of earthquakes by continent"
+
+# Побудова стовпчикової діаграми
+plt.figure(figsize=(10, 6))
+data_grouped.plot(kind='bar', color='skyblue', edgecolor='black')
+plt.xlabel(group_by_option)
+plt.ylabel(ylabel)
+plt.title(title)
+plt.xticks(rotation=45)
+
+# Відображення графіка у Streamlit
+st.pyplot(plt)
