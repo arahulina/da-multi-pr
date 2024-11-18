@@ -1,6 +1,11 @@
 import streamlit as st
 
-st.title("🎈 My new app")
-st.write(
-    "Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
-)
+# Головна сторінка
+st.title("Earthquake Data Analysis")
+st.write("""
+Welcome to the Earthquake Data Analysis Project! 
+Use the sidebar to navigate through different analysis tools:
+- Interactive Map
+- Trends Analysis
+- Tsunami vs Depth & Magnitude Analysis
+""")
