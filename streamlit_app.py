@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import base64
 
 # Головна сторінка
 st.title("Earthquake Data Analysis")
@@ -11,13 +12,18 @@ Use the sidebar to navigate through different analysis tools:
 - Tsunami vs Depth & Magnitude Analysis
 """)
 
-# Вставка стилів для фонового зображення
-def add_bg_from_url():
+# Функція для додавання фонового зображення з локального файлу
+def add_local_bg(image_file):
+    # Читаємо зображення у base64
+    with open(image_file, "rb") as file:
+        encoded_string = base64.b64encode(file.read()).decode()
+    
+    # Вставка стилів у Streamlit
     st.markdown(
         f"""
         <style>
         .stApp {{
-            background: url("https://depositphotos.com/photo/scenic-view-volcanic-rocky-mountain-bright-sunset-581699896.html");
+            background-image: url("data:image/png;base64,{encoded_string}");
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -27,5 +33,5 @@ def add_bg_from_url():
         unsafe_allow_html=True
     )
 
-# Виклик функції для додавання фону
-add_bg_from_url()
+# Використання локального зображення
+add_local_bg("background.jpg")
