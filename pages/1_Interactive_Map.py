@@ -1,102 +1,83 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
+import seaborn as sns
 import matplotlib.pyplot as plt
 import folium
+from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
+
+# Заголовок сторінки
+st.title("Geographical Analysis of Earthquakes")
+
+# Локальний шлях до файлу
+local_file_path = "data/earthquake_1995-2023.csv"
 
 # Завантаження даних
 @st.cache_data
-def load_data():
-    return pd.read_csv('data/earthquake_1995-2023.csv')
+def load_data(file_path):
+    return pd.read_csv(file_path)
 
-data = load_data()
+try:
+    data = load_data(local_file_path)
+    st.success("Data successfully loaded from the local file!")
 
-# Перетворення колонки з датами на формат datetime
-data['date_time'] = pd.to_datetime(data['date_time'], errors='coerce')
-# Додавання колонки для року
-data['year'] = data['date_time'].dt.year
+    # Перевірка необхідних колонок
+    required_columns = ['latitude', 'longitude', 'magnitude']
+    if all(col in data.columns for col in required_columns):
+        # Обробка пропущених значень
+        data = data.dropna(subset=required_columns)
 
-#заголовок
-st.title("Interactive Map of Earthquakes")
+        # Карта розподілу землетрусів
+        st.subheader("Map of Earthquake Magnitudes")
+        map_center = [data['latitude'].mean(), data['longitude'].mean()]
+        earthquake_map = folium.Map(location=map_center, zoom_start=2)
 
-# Вибір континенту з можливістю вибору всіх континентів
-continents = sorted(data['continent'].dropna().unique())
-continents.insert(0, "All continents")
-selected_continent = st.selectbox("Select a continent:", continents, key="continent_select")
+        # Додавання кластерів
+        marker_cluster = MarkerCluster().add_to(earthquake_map)
+        for _, row in data.iterrows():
+            popup_text = f"Magnitude: {row['magnitude']}"
+            folium.CircleMarker(
+                location=[row['latitude'], row['longitude']],
+                radius=max(1, row['magnitude'] / 2),
+                color="red",
+                fill=True,
+                fill_opacity=0.6,
+                popup=popup_text,
+            ).add_to(marker_cluster)
 
-# Вибір року з можливістю вибору всіх років
-years = sorted(data['year'].dropna().unique())
-years.insert(0, "All years")
-selected_year = st.selectbox("Select a year:", years, key="year_select")
+        # Відображення карти
+        st_data = st_folium(earthquake_map, width=700, height=500)
 
-# Фільтрація даних за вибраними континентом і роком
-if selected_continent == "All continents":
-    filtered_data = data
-else:
-    filtered_data = data[data['continent'] == selected_continent]
+        # Графік розсіювання
+        st.subheader("Scatter Plot: Magnitude vs. Geographic Location")
+        fig, ax = plt.subplots(figsize=(10, 6))
+        scatter = sns.scatterplot(
+            data=data,
+            x='longitude',
+            y='latitude',
+            hue='magnitude',
+            palette='coolwarm',
+            size='magnitude',
+            sizes=(20, 200),
+            ax=ax
+        )
+        ax.set_title("Magnitude Distribution by Latitude and Longitude")
+        ax.set_xlabel("Longitude")
+        ax.set_ylabel("Latitude")
+        plt.legend(loc='upper right', title="Magnitude")
+        st.pyplot(fig)
 
-if selected_year != "All years":
-    filtered_data = filtered_data[filtered_data['year'] == selected_year]
+        # Кореляція
+        st.subheader("Correlation Analysis")
+        corr_matrix = data[['latitude', 'longitude', 'magnitude']].corr()
+        st.write("Correlation Matrix:")
+        st.dataframe(corr_matrix)
 
-# Перевірка наявності даних після фільтрації
-if filtered_data.empty:
-    st.warning("No data for the selected continent and year.")
-else:
-    # Функція для визначення кольору залежно від магнітуди
-    def magnitude_color(magnitude):
-        if magnitude < 4.0:
-            return 'green'
-        elif 4.0 <= magnitude < 5.0:
-            return 'orange'
-        elif 5.0 <= magnitude < 6.0:
-            return 'red'
-        else:
-            return 'darkred'
+    else:
+        st.error("The dataset does not contain the required columns: latitude, longitude, magnitude.")
 
-    # Створення базової карти з фокусом на середні координати
-    m = folium.Map(location=[filtered_data['latitude'].mean(), filtered_data['longitude'].mean()], zoom_start=3)
-
-    # Вставка CSS для зменшення білого простору після карти
-    st.markdown(
-    """
-    <style>
-    iframe {
-        height: 500px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-    # Додавання точок землетрусів на карту
-    for _, row in filtered_data.iterrows():
-        folium.CircleMarker(
-            location=[row['latitude'], row['longitude']],
-            radius=5,
-            popup=f"Магнітуда: {row['magnitude']}\nГлибина: {row['depth']} км",
-            color=magnitude_color(row['magnitude']),
-            fill=True,
-            fill_opacity=0.6
-        ).add_to(m)
-
-    # Додавання легенди на карту
-    legend_html = """
-         <div style="position: fixed;
-                     bottom: 50px; left: 50px; width: 150px; height: 150px;
-                     background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                     ">
-         &nbsp; <b>Легенда:</b> <br>
-         &nbsp; <i style="color:green;">●</i> Магнітуда < 4.0 <br>
-         &nbsp; <i style="color:orange;">●</i> 4.0 ≤ Магнітуда < 5.0 <br>
-         &nbsp; <i style="color:red;">●</i> 5.0 ≤ Магнітуда < 6.0 <br>
-         &nbsp; <i style="color:darkred;">●</i> Магнітуда ≥ 6.0
-         </div>
-         """
-    m.get_root().html.add_child(folium.Element(legend_html))
-
-    # Відображення карти у Streamlit
-    st.write(f"Continent: {selected_continent}, Year: {selected_year}")
-    st_folium(m, width=700, height=500)
+except FileNotFoundError:
+    st.error(f"The file was not found at the specified path: {local_file_path}")
 
 
 # Заголовок додатку

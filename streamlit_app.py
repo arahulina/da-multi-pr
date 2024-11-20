@@ -35,3 +35,11 @@ def add_local_bg(image_file):
 
 # Використання локального зображення
 add_local_bg("background.jpg")
+
+
+@st.cache_data
+def load_data():
+    return pd.read_csv('data/earthquake_1995-2023.csv')
+
+data = load_data()
+st.write(data.head())
