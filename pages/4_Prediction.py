@@ -5,6 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 import streamlit as st
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import seaborn as sns
 
 # Завантаження даних
 @st.cache_data
@@ -64,3 +67,58 @@ plt.ylabel('Number of Earthquakes')
 plt.title('Earthquake Predictions (2025–2030)')
 plt.legend()
 st.pyplot(plt)
+
+# Заголовок
+st.title("K-Means Clustering for Earthquake Dataset")
+
+# Вибір змінних для кластеризації
+st.header("Clustering Parameters")
+selected_columns = st.multiselect(
+    "Select columns for clustering:", 
+    data.select_dtypes(include=['float64', 'int64']).columns.tolist()
+)
+
+# Вибір кількості кластерів
+n_clusters = st.slider("Number of Clusters (k):", min_value=2, max_value=10, value=3)
+
+if selected_columns:
+    # Підготовка даних
+    clustering_data = data[selected_columns].dropna()
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(clustering_data)
+    
+    # K-Means моделювання
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    clustering_data['Cluster'] = kmeans.fit_predict(scaled_data)
+    
+    # Виведення кластерної статистики
+    st.subheader("Cluster Statistics")
+    st.write(clustering_data.groupby('Cluster').mean())
+    
+# Візуалізація кластерів 
+if len(selected_columns) == 2:  # Якщо обрано рівно 2 змінні
+    st.subheader(f"Visualization of Clusters (k={n_clusters})")
+    
+    # Перевірка на пропущені значення
+    if clustering_data[selected_columns].isnull().any().any():
+        st.warning("Selected columns contain missing values. Removing rows with NaN.")
+        clustering_data = clustering_data.dropna(subset=selected_columns)
+    
+    # Перевірка чи дані доступні після очищення
+    if clustering_data.shape[0] > 0:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.scatterplot(
+            x=clustering_data[selected_columns[0]],
+            y=clustering_data[selected_columns[1]],
+            hue=clustering_data['Cluster'],
+            palette='viridis',
+            ax=ax
+        )
+        ax.set_title(f"K-Means Clustering with {n_clusters} Clusters")
+        ax.set_xlabel(selected_columns[0])
+        ax.set_ylabel(selected_columns[1])
+        st.pyplot(fig)
+    else:
+        st.error("No data available for the selected columns after cleaning.")
+else:
+    st.write("Please select exactly 2 columns to visualize the clusters.")

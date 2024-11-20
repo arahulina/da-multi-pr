@@ -54,3 +54,36 @@ st.pyplot(fig)
 # Горизонтальна таблиця
 st.write("Earthquake Counts by Year:")
 st.dataframe(yearly_counts.reset_index().T)
+
+
+# Створення інтерфейсу в Streamlit
+st.title("Statistical Analysis of Earthquake Data")
+
+# Вибір стовпця для аналізу
+numeric_columns = data.select_dtypes(include=['float64', 'int64']).columns
+selected_column = st.selectbox("Select a numeric column for analysis:", numeric_columns)
+
+if selected_column:
+    # Розрахунок статистичних показників
+    col_data = data[selected_column].dropna()  # Видалення відсутніх значень
+    stats = {
+        "Mean": col_data.mean(),
+        "Median": col_data.median(),
+        "Mode": col_data.mode()[0] if not col_data.mode().empty else None,
+        "Minimum": col_data.min(),
+        "Maximum": col_data.max(),
+        "Standard Deviation": col_data.std(),
+        "Variance": col_data.var(),
+        "Count": col_data.count(),
+    }
+
+    # Вивід результатів у вигляді таблиці
+    stats_df = pd.DataFrame(stats.items(), columns=["Statistic", "Value"])
+    st.write("### Statistical Summary")
+    st.dataframe(stats_df)
+
+    # Додаткова візуалізація: гістограма розподілу
+    st.write("### Distribution of the Selected Column")
+    st.bar_chart(col_data.value_counts().sort_index())
+else:
+    st.write("Please select a numeric column for analysis.")
