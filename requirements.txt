@@ -7,3 +7,4 @@ folium
 streamlit_folium
 scikit-learn
 seaborn
+streamlit-option-menu
