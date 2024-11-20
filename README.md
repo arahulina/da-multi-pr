@@ -54,9 +54,9 @@ To run the Streamlit app locally, follow these steps:
 The application includes the following visualization tools:
 
 1. **Earthquake Distribution Map**: Shows earthquakes by continent and year, with color-coded markers based on magnitude.
-   ![Map](images/image1.png)
+   ![Map](images/image2.png)
 3. **Trend Line (Earthquake Count)**: Displays the number of earthquakes over the years along with a table of yearly earthquake counts.
-4. **Scatter Plot (Tsunami Probability)**: Illustrates the correlation between earthquake depth, magnitude, and tsunami likelihood.
+4. **Scatter Plot (Tsunami Probability)**: Illustrates the correlation between earthquake depth, magnitude, and tsunami likelihood.![Map](images/image1.png)
 
 ## Future Enhancements
 In future versions, we aim to add:
