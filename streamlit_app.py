@@ -12,6 +12,7 @@ Use the sidebar to navigate through different analysis tools:
 - Interactive Map
 - Trends Analysis
 - Tsunami vs Depth & Magnitude Analysis
+- Prediction
 """)
 
 # Функція для додавання фонового зображення з локального файлу
