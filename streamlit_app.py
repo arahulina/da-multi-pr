@@ -42,4 +42,4 @@ def load_data():
     return pd.read_csv('data/earthquake_1995-2023.csv')
 
 data = load_data()
-st.write(data.head())
+#st.write(data.head())

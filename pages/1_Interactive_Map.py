@@ -19,7 +19,7 @@ def load_data(file_path):
 
 try:
     data = load_data(local_file_path)
-    st.success("Data successfully loaded from the local file!")
+    #st.success("Data successfully loaded from the local file!")
 
     # Перевірка необхідних колонок
     required_columns = ['latitude', 'longitude', 'magnitude']
