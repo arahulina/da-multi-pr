@@ -18,7 +18,6 @@ def load_data(file_path):
 def display():
     # Заголовок сторінки
     st.title("Geographical Analysis of Earthquakes")
-
     
     try:
         data = load_data(local_file_path)

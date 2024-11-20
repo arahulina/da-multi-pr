@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 def load_data():
     return pd.read_csv('data/earthquake_1995-2023.csv')
 
-data = load_data()
 
 def display():
+    
+    data = load_data()
+
     # Заголовок додатку
     st.title("Scattering: Magnitude versus depth of earthquakes")
 
