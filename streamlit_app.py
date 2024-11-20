@@ -2,7 +2,11 @@ import streamlit as st
 import pandas as pd
 import base64
 from streamlit_option_menu import option_menu
-from pages import InteractiveMap, Prediction, TrendsAnalysis, TsunamiDepthMagnitude
+from pages import InteractiveMap
+from pages import Prediction
+from pages import TrendsAnalysis
+from pages import TsunamiDepthMagnitude
+
 
 # Головна сторінка
 st.title("Earthquake Data Analysis")

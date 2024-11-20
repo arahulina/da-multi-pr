@@ -6,18 +6,20 @@ import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
+# Локальний шлях до файлу
+local_file_path = "data/earthquake_1995-2023.csv"
+
+# Завантаження даних
+@st.cache_data
+def load_data(file_path):
+    return pd.read_csv(file_path)
+
+
 def display():
     # Заголовок сторінки
     st.title("Geographical Analysis of Earthquakes")
 
-    # Локальний шлях до файлу
-    local_file_path = "data/earthquake_1995-2023.csv"
-
-    # Завантаження даних
-    @st.cache_data
-    def load_data(file_path):
-        return pd.read_csv(file_path)
-
+    
     try:
         data = load_data(local_file_path)
         #st.success("Data successfully loaded from the local file!")
